@@ -1,4 +1,4 @@
-package utils
+package netease
 
 import (
 	"bytes"
@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"wy_music_cloud/utils"
 )
 
 type Options struct {
@@ -26,42 +27,43 @@ type Options struct {
 	Url     string
 }
 
+var UserAgentList = []string{
+	"Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1",
+	"Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1",
+	"Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
+	"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
+	"Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
+	"Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89;GameHelper",
+	"Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1",
+	"Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586",
+}
+
 func chooseUserAgent(ua string) string {
-	userAgentList := []string{
-		"Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1",
-		"Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1",
-		"Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
-		"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
-		"Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36",
-		"Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89;GameHelper",
-		"Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1",
-		"Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586",
-	}
 
 	rand.Seed(time.Now().UnixNano())
 	index := 0
 	if ua == "" {
-		index = rand.Intn(len(userAgentList))
+		index = rand.Intn(len(UserAgentList))
 	} else if ua == "mobile" {
 		index = rand.Intn(8)
 	} else {
 		index = rand.Intn(7) + 7
 	}
-	return userAgentList[index]
+	return UserAgentList[index]
 }
 
-func CreateRequest(method string, url string, data map[string]string, options *Options,headers map[string]string) (map[string]interface{}, []*http.Cookie) {
+func CreateRequest(method string, url string, data map[string]string, options *Options, headers map[string]string) (map[string]interface{}, []*http.Cookie) {
 	req := requests.Requests()
 	req.Header.Set("User-Agent", chooseUserAgent(options.Ua))
-	if headers!=nil {
+	if headers != nil {
 		for k, v := range headers {
-			req.Header.Set(k,v)
+			req.Header.Set(k, v)
 		}
 	}
 	csrfToken := ""
@@ -87,7 +89,7 @@ func CreateRequest(method string, url string, data map[string]string, options *O
 	}
 	if options.Crypto == "weapi" {
 		data["csrf_token"] = csrfToken
-		data = Weapi(data)
+		data = utils.Weapi(data)
 		reg, _ := regexp.Compile(`/\w*api/`)
 		url = reg.ReplaceAllString(url, "/weapi/")
 	} else if options.Crypto == "linuxapi" {
@@ -96,7 +98,7 @@ func CreateRequest(method string, url string, data map[string]string, options *O
 		reg, _ := regexp.Compile(`/\w*api/`)
 		linuxApiData["url"] = reg.ReplaceAllString(url, "/api/")
 		linuxApiData["params"] = data
-		data = Linuxapi(linuxApiData)
+		data = utils.Linuxapi(linuxApiData)
 		req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36")
 		url = "https://music.163.com/api/linux/forward"
 	} else if options.Crypto == "eapi" {
@@ -123,7 +125,7 @@ func CreateRequest(method string, url string, data map[string]string, options *O
 			req.SetCookie(&http.Cookie{Name: key, Value: value, Path: "/"})
 		}
 		eapiData["header"] = header
-		data = Eapi(options.Url, eapiData)
+		data = utils.Eapi(options.Url, eapiData)
 		reg, _ := regexp.Compile(`/\w*api/`)
 		url = reg.ReplaceAllString(url, "/eapi/")
 	}
@@ -172,22 +174,24 @@ func CreateRequest(method string, url string, data map[string]string, options *O
 	if _, ok := answer["code"]; !ok {
 		answer["code"] = 200
 	}
+	indent, err := json.MarshalIndent(answer, "", "")
+	fmt.Println("CreateRequest" + string(indent))
 	return answer, cookies
 }
 
-func UploadFile(filePath string,url string,headers map[string]string)string  {
+func UploadFile(filePath string, url string, headers map[string]string) string {
 	bodyBuf := &bytes.Buffer{}
 	bodyWrite := multipart.NewWriter(bodyBuf)
 	file, err := os.Open(filePath)
-	if err!=nil {
+	if err != nil {
 		panic(err)
 	}
 	stat, err := file.Stat()
 	fileWrite, err := bodyWrite.CreateFormFile("songFile", stat.Name())
-	fmt.Println("file.Name->"+stat.Name())
-	_,err = io.Copy(fileWrite,file)
+	fmt.Println("file.Name->" + stat.Name())
+	_, err = io.Copy(fileWrite, file)
 	if err != nil {
-		fmt.Println("io Copy error",err)
+		fmt.Println("io Copy error", err)
 		panic(err)
 	}
 
@@ -195,7 +199,7 @@ func UploadFile(filePath string,url string,headers map[string]string)string  {
 	bodyWrite.Close() //正确位置            ✓
 	request, err := http.NewRequest("POST", url, bodyBuf)
 	if err != nil {
-		fmt.Println("http newrequest error",err)
+		fmt.Println("http newrequest error", err)
 		panic(err)
 	}
 
@@ -203,11 +207,11 @@ func UploadFile(filePath string,url string,headers map[string]string)string  {
 	request.Header.Set("User-Agent", chooseUserAgent(""))
 	if headers != nil {
 		for k, v := range headers {
-			request.Header.Set(k,v)
+			request.Header.Set(k, v)
 		}
 	}
 
-	fmt.Println("ContentLength->"+strconv.FormatInt(stat.Size(),10))
+	fmt.Println("ContentLength->" + strconv.FormatInt(stat.Size(), 10))
 
 	resp, err := http.DefaultClient.Do(request)
 	//bodyWrite.Close() //错误位置         ✘

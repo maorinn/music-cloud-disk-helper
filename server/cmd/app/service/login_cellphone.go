@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"net/http"
-	"wy_music_cloud/utils"
+	"wy_music_cloud/internal/netease"
 )
 
 type LoginCellphoneService struct {
@@ -14,14 +14,14 @@ type LoginCellphoneService struct {
 	Md5password string `json:"md5_password" form:"md5_password"`
 }
 
-func (service *LoginCellphoneService) LoginCellphone() (map[string]interface{},[]*http.Cookie) {
+func (service *LoginCellphoneService) LoginCellphone() (map[string]interface{}, []*http.Cookie) {
 
 	// 获得所有cookie
 	cookies := []*http.Cookie{{Name: "os", Value: "pc"}}
 	//cookiesOS :=
 	//cookies = append(cookies, cookiesOS)
 
-	options := &utils.Options{
+	options := &netease.Options{
 		Crypto:  "weapi",
 		Ua:      "pc",
 		Cookies: cookies,
@@ -42,7 +42,7 @@ func (service *LoginCellphoneService) LoginCellphone() (map[string]interface{},[
 	data["rememberLogin"] = "true"
 
 	//reBody, cookies := util.CreateRequest("POST", `https://www.httpbin.org/post`, data, options)
-	reBody, cookies := utils.CreateRequest("POST", `https://music.163.com/weapi/login/cellphone`, data, options,nil)
+	reBody, cookies := netease.CreateRequest("POST", `https://music.163.com/weapi/login/cellphone`, data, options, nil)
 
 	cookiesStr := ""
 
@@ -55,5 +55,5 @@ func (service *LoginCellphoneService) LoginCellphone() (map[string]interface{},[
 	}
 
 	reBody["cookie"] = cookiesStr
-	return reBody,cookies
+	return reBody, cookies
 }
