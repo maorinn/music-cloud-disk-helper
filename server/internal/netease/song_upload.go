@@ -115,7 +115,7 @@ func (service *UploadCloud) UploadCloud() map[string]interface{} {
 	data = make(map[string]string)
 	data["songid"] = res["songId"].(string)
 	data["song"] = songName
-	data["filename"] = strings.Split(stat.Name(), ".mp3")[0]
+	data["filename"] = stat.Name()
 	data["album"] = album
 	data["artist"] = artist
 	data["bitrate"] = "999000"

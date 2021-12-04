@@ -6,7 +6,7 @@ import (
 	"wy_music_cloud/cmd/app/handlers"
 	_ "wy_music_cloud/config"
 )
-
+//
 func main() {
 	gin.SetMode("debug")
 	routersInit := handlers.InitRouter()
@@ -27,8 +27,8 @@ func main() {
 //	}
 //	fmt.Println(string(b))
 //	// 上传
-//	cloud := plugins.UploadCloud{
-//		FilePath: "./夜曲.mp3",
+//	cloud := netease.UploadCloud{
+//		FilePath: "./tmp/夜曲6.mp3",
 //		Cookies:  config.Config.MusicAccount.Cookie,
 //	}
 //	cloud.UploadCloud()

@@ -11,6 +11,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.GET("/ping", pong)
+	apiv1 := r.Group("/api/v1")
+	apiv1.POST("/UploadSong",v1.UploadSong)
 	apiBiliv1 := r.Group("/api/v1/bili")
 	{
 		//获取二维码url和key

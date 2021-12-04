@@ -3,6 +3,7 @@ package service
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"wy_music_cloud/internal/netease"
 )
@@ -17,7 +18,7 @@ type LoginCellphoneService struct {
 func (service *LoginCellphoneService) LoginCellphone() (map[string]interface{}, []*http.Cookie) {
 
 	// 获得所有cookie
-	cookies := []*http.Cookie{{Name: "os", Value: "pc"}}
+	cookies := []*http.Cookie{{Name: "os", Value: "pc"},{Name: "appver",Value: "2.7.1.198277"}}
 	//cookiesOS :=
 	//cookies = append(cookies, cookiesOS)
 
@@ -55,5 +56,6 @@ func (service *LoginCellphoneService) LoginCellphone() (map[string]interface{}, 
 	}
 
 	reBody["cookie"] = cookiesStr
+	fmt.Print("888888:"+cookiesStr)
 	return reBody, cookies
 }

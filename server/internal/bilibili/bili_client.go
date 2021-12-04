@@ -3,14 +3,17 @@ package bilibili
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"wy_music_cloud/common"
+	"wy_music_cloud/utils"
 )
 
 type BiliClient struct {
-	Me   *common.Account
+	Me   *Account
 	auth *CookieAuth
 
 	*baseClient
@@ -40,9 +43,7 @@ type BiliSetting struct {
 	UserAgent string
 }
 
-// NewBiliClient
-//
-// 带有账户Cookie的Client，用于访问私人操作API
+// NewBiliClient 带有账户Cookie的Client，用于访问私人操作API
 func NewBiliClient(setting *BiliSetting) (*BiliClient, error) {
 	//if setting.Auth == nil {
 	//	return nil, errors.New("auth cannot be nil")
@@ -58,6 +59,7 @@ func NewBiliClient(setting *BiliSetting) (*BiliClient, error) {
 	}
 
 	if bili.auth != nil {
+		fmt.Println("1111111111111"+bili.auth.BiliJCT)
 		account, err := bili.GetMe()
 		if err != nil {
 			return nil, err
@@ -69,11 +71,42 @@ func NewBiliClient(setting *BiliSetting) (*BiliClient, error) {
 	return bili, nil
 }
 
-// GetMe
-//
-// 获取个人基本信息
-func (b *BiliClient) GetMe() (*common.Account, error) {
-	resp, err := b.RawParse(common.BiliApiURL,
+// GetLoginUrl 申请二维码URL及扫码密钥
+func (b *BiliClient) GetLoginUrl() (*QrLoinUrl, error) {
+	resp, err := b.RawParse(common.BiliPassportURL, "qrcode/getLoginUrl", "GET", nil)
+	if err != nil {
+		return nil, err
+	}
+	var qrLoinUrl *QrLoinUrl
+	if err = json.Unmarshal(resp.Data, &qrLoinUrl); err != nil {
+		return nil, err
+	}
+	return qrLoinUrl, nil
+}
+
+// GetLoginInfo 获取登录结果
+//status	bool	扫码是否成功	true：成功
+//false：未成功
+//data	正确时：obj
+//错误时：num	正确时：游戏分站url
+//错误时：错误代码	未成功时：
+//-1：密钥错误
+//-2：密钥超时
+//-4：未扫描a
+//-5：未确认
+func (b *BiliClient) GetLoginInfo(qrLoinUrl *QrLoinUrl) (*common.Response, error) {
+	resp, err := b.RawParse(common.BiliPassportURL, "qrcode/getLoginInfo", "POST", map[string]string{
+		"oauthKey": qrLoinUrl.OauthKey,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetMe 获取个人基本信息
+func (b *BiliClient) GetMe() (*Account, error) {
+	resp, err := b.RawParse(BiliApiURL,
 		"x/member/web/account",
 		"GET",
 		nil,
@@ -81,30 +114,98 @@ func (b *BiliClient) GetMe() (*common.Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	var account *common.Account
+	var account *Account
 	if err = json.Unmarshal(resp.Data, &account); err != nil {
 		return nil, err
 	}
 	return account, nil
 }
 
-// SetClient
-//
-// 设置Client,可以用来更换代理等操作
+// VideoGetPageList 获取分P列表
+func (b *BiliClient) VideoGetPageList(bvid string) ([]*VideoPage, error) {
+	resp, err := b.RawParse(BiliApiURL,
+		"x/player/pagelist",
+		"GET",
+		map[string]string{
+			"bvid": bvid,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	var list []*VideoPage
+	if err = json.Unmarshal(resp.Data, &list); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+// VideoGetPlayURL 获取视频取流地址
+// 所有参数、返回信息和取流方法的说明请直接前往：https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/video/videostream_url.md
+func (b *BiliClient) VideoGetPlayURL(bvid string, cid int64, qn int, fnval int) (*VideoPlayURLResult, error) {
+	resp, err := b.RawParse(
+		BiliApiURL,
+		"x/player/playurl",
+		"GET",
+		map[string]string{
+			"bvid":  bvid,
+			"cid":   strconv.FormatInt(cid, 10),
+			"qn":    strconv.Itoa(qn),
+			"fnval": strconv.Itoa(fnval),
+			"fnver": "0",
+			"fourk": "1",
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	var r *VideoPlayURLResult
+	if err = json.Unmarshal(resp.Data, &r); err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+// Down 下载资源
+func (b *BiliClient) Down(url, path string,fileName string) error {
+	client := &http.Client{}
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		panic(err)
+	}
+	request.Header.Add("range", "bytes=0-")
+	request.Header.Add("referer","https://www.bilibili.com")
+	res, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	exists := utils.Exists(path)
+	if exists == false {
+		os.Mkdir(path,os.ModePerm)
+	}
+	f, err := os.Create(path+"/"+fileName)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	// mao 或许可以直接上传
+	if _, err := io.Copy(f, res.Body); err != nil {
+		return err
+	}
+	return nil
+}
+// SetClient 设置Client,可以用来更换代理等操作
 func (b *BiliClient) SetClient(client *http.Client) {
 	b.client = client
 }
 
-// SetUA
-//
-// 设置UA
+// SetUA 设置UA
 func (b *BiliClient) SetUA(ua string) {
 	b.ua = ua
 }
 
-// Raw
-//
-// base末尾带/
+// Raw base末尾带/
 func (b *BiliClient) Raw(base, endpoint, method string, payload map[string]string) ([]byte, error) {
 	raw, err := b.raw(base, endpoint, method, payload,
 		func(d *url.Values) {
@@ -129,9 +230,7 @@ func (b *BiliClient) Raw(base, endpoint, method string, payload map[string]strin
 	return raw, nil
 }
 
-// RawParse
-//
-// base末尾带/
+// RawParse base末尾带/
 func (b *BiliClient) RawParse(base, endpoint, method string, payload map[string]string) (*common.Response, error) {
 	raw, err := b.Raw(base, endpoint, method, payload)
 	if err != nil {
@@ -140,8 +239,7 @@ func (b *BiliClient) RawParse(base, endpoint, method string, payload map[string]
 	return b.parse(raw)
 }
 
-// GetCookieAuth
-// 获取Cookie信息
+// GetCookieAuth 获取Cookie信息
 func (b *BiliClient) GetCookieAuth() *CookieAuth {
 	return b.auth
 }

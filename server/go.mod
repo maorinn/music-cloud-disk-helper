@@ -7,6 +7,7 @@ require (
 	github.com/dhowden/tag v0.0.0-20201120070457-d52dcb253c63
 	github.com/forgoer/openssl v1.1.1
 	github.com/gin-gonic/gin v1.7.7
+	github.com/nats-io/nuid v1.0.1
 	github.com/spf13/viper v1.9.0
 )
 

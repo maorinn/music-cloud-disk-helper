@@ -3,8 +3,6 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"wy_music_cloud/cmd/app/handlers/base"
-	"wy_music_cloud/cmd/app/service"
-	"wy_music_cloud/common"
 	"wy_music_cloud/internal/bilibili"
 )
 
@@ -18,8 +16,7 @@ func init() {
 
 // GetLoginUrl 申请二维码信息
 func GetLoginUrl(c *gin.Context) {
-	qr := service.BiliLoginQr{BiliClient: b}
-	r, err := qr.GetLoginUrl()
+	r, err := b.GetLoginUrl()
 	if err != nil {
 		base.Re(c, -1, err.Error(), nil)
 	}
@@ -28,10 +25,9 @@ func GetLoginUrl(c *gin.Context) {
 
 // GetLoginInfo 获取扫码结果
 func GetLoginInfo(c *gin.Context) {
-	qr := service.BiliLoginQr{BiliClient: b}
-	var q *common.QrLoinUrl
+	var q *bilibili.QrLoinUrl
 	c.BindJSON(&q)
-	r, err := qr.GetLoginInfo(q)
+	r, err := b.GetLoginInfo(q)
 	if err != nil {
 		base.Re(c, -1, err.Error(), nil)
 	}

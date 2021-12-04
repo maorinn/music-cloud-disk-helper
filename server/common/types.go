@@ -9,22 +9,7 @@ type Response struct {
 	TTL     int             `json:"ttl,omitempty"`
 	Data    json.RawMessage `json:"data,omitempty"`
 }
-type QrLoinUrl struct {
-	Url      string `json:"url"`
-	OauthKey string `json:"oauthKey"`
-}
-type QrLoginInfo struct {
-}
-type Account struct {
-	MID      int64  `json:"mid"`       // 我的mid
-	UName    string `json:"uname"`     // 我的昵称
-	UserID   string `json:"userid"`    // 我的用户名
-	Sign     string `json:"sign"`      // 我的签名
-	Birthday string `json:"birthday"`  // 我的生日 YYYY-MM-DD
-	Sex      string `json:"sex"`       // 我的性别 男 女 保密
-	NickFree bool   `json:"nick_free"` // 是否未设置昵称 false：设置过昵称 true：未设置昵称
-	Rank     string `json:"rank"`      // 我的会员等级
-}
+
 
 type NavInfo struct {
 	EmailVerified      int                    `json:"email_verified"`       // 是否验证邮箱地址 0:未验证 1:已验证
