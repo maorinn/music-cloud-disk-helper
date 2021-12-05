@@ -85,7 +85,7 @@ func UploadSong(c *gin.Context) {
 		SongMetadata: &netease.SongMetadata{
 			Title:  view.Title,
 			Artist: view.Owner.Name,
-			Album:  "Bilibili",
+			Album:  "未知专辑",
 		},
 	}
 	cloud.UploadCloud()

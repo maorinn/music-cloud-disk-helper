@@ -4,11 +4,11 @@ go 1.17
 
 require (
 	github.com/asmcos/requests v0.0.0-20210319030608-c839e8ae4946
-	github.com/dhowden/tag v0.0.0-20201120070457-d52dcb253c63
 	github.com/forgoer/openssl v1.1.1
 	github.com/gin-gonic/gin v1.7.7
-	github.com/nats-io/nuid v1.0.1
+	github.com/io24m/hammer v0.0.0-20210920035608-60abc9f0ce24
 	github.com/spf13/viper v1.9.0
+	github.com/tidwall/gjson v1.12.1
 )
 
 require (
@@ -32,6 +32,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect

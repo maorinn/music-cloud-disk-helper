@@ -6,6 +6,7 @@ import (
 	"wy_music_cloud/cmd/app/handlers"
 	_ "wy_music_cloud/config"
 )
+
 //
 func main() {
 	gin.SetMode("debug")
@@ -28,8 +29,13 @@ func main() {
 //	fmt.Println(string(b))
 //	// 上传
 //	cloud := netease.UploadCloud{
-//		FilePath: "./tmp/夜曲6.mp3",
+//		FilePath: "./tmp/燃改《反方向的钟》搭配双城之战mv居然有这种效果！.mp3",
 //		Cookies:  config.Config.MusicAccount.Cookie,
+//		SongMetadata: &netease.SongMetadata{
+//			Title:  "燃改《反方向的钟》搭配双城之战mv居然有这种效果",
+//			Artist: "",
+//			Album:  "",
+//		},
 //	}
 //	cloud.UploadCloud()
 //}

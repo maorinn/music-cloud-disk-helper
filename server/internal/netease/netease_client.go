@@ -8,6 +8,7 @@ import (
 	"github.com/asmcos/requests"
 	"io"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"mime/multipart"
 	"net/http"
@@ -195,19 +196,18 @@ func UploadFile(filePath string, url string, headers map[string]string) string {
 		panic(err)
 	}
 
-	contentType := bodyWrite.FormDataContentType()
+	contentType := "audio/mpeg"
 	bodyWrite.Close() //正确位置            ✓
 	request, err := http.NewRequest("POST", url, bodyBuf)
 	if err != nil {
 		fmt.Println("http newrequest error", err)
 		panic(err)
 	}
-
 	request.Header.Set("Content-Type", contentType)
-	request.Header.Set("User-Agent", chooseUserAgent(""))
+	//request.Header.Set("User-Agent", chooseUserAgent(""))
 	if headers != nil {
 		for k, v := range headers {
-			request.Header.Set(k, v)
+			request.Header.Add(k, v)
 		}
 	}
 
@@ -224,4 +224,63 @@ func UploadFile(filePath string, url string, headers map[string]string) string {
 		panic(err)
 	}
 	return string(respBytes)
+}
+
+func _UploadFile(url string, filePath string, headers map[string]string) (string, error) {
+	var apiResponse struct {
+		DownloadUrl string `json:"download_url"`
+	}
+	file, err := os.Open(filePath)
+
+	//var body bytes.Buffer
+	//
+	//w := multipart.NewWriter(&body)
+	//
+	//wr, err := w.CreateFormFile("file",file.Name())
+	//if err != nil {
+	//	return "", err
+	//}
+	//
+	//n, err := io.Copy(wr, file)
+	//if err != nil {
+	//	return "", err
+	//}
+	//
+	//w.Close()
+	readFile, err := ReadFile(filePath)
+	if err != nil {
+		panic(err)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(readFile)))
+	if err != nil {
+		return "", err
+	}
+	if headers != nil {
+		for k, v := range headers {
+			req.Header.Add(k, v)
+		}
+	}
+	info, err := file.Stat()
+	req.Header.Add("Content-Length", fmt.Sprintf("%d", info.Size()))
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	mjson, _ := json.Marshal(headers)
+	mString := string(mjson)
+	fmt.Printf("print mString:%s", mString)
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			log.Println("can't close response body ", err)
+		}
+	}()
+
+	if res.StatusCode == http.StatusConflict {
+		return "domain.CacheURL + path", nil
+	}
+	respBytes, err := ioutil.ReadAll(res.Body)
+	fmt.Println("上传结果->" + string(respBytes))
+	defer file.Close()
+	return apiResponse.DownloadUrl, nil
 }
