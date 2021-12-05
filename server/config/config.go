@@ -5,11 +5,14 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
+	"path/filepath"
+	"wy_music_cloud/utils"
 )
+
 type MusicAccountConf struct {
 	Phone    string `mapstructure:"phone"`
 	Password string `mapstructure:"password"`
-	Cookie []*http.Cookie
+	Cookie   []*http.Cookie
 }
 
 type BiliAccountConf struct {
@@ -17,14 +20,18 @@ type BiliAccountConf struct {
 }
 type Conf struct {
 	MusicAccount MusicAccountConf `mapstructure:"music_account"`
-	BiliAccount BiliAccountConf `mapstructure:"bili_account"`
+	BiliAccount  BiliAccountConf  `mapstructure:"bili_account"`
+	HomePath     string
 }
 
-
 var Config = new(Conf)
+
 func init() {
+	str := filepath.Dir(utils.GetCurrentAbPathByCaller())
+	Config.HomePath = str
+	fmt.Printf("当前路径:%s", str)
 	viper.SetConfigType("yaml")
-	viper.SetConfigFile("./config/conf.yaml")
+	viper.SetConfigFile(str + "/config/conf.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Println(err)

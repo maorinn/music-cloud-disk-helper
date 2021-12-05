@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/dhowden/tag"
 	"hash"
 	"io"
 	"net/http"
@@ -13,6 +12,12 @@ import (
 	"strconv"
 	"strings"
 )
+
+type SongMetadata struct {
+	Title  string // 歌曲名称
+	Artist string // 艺术家
+	Album  string // 专辑
+}
 
 type TokenRes struct {
 	Code    int         `json:"code"`
@@ -29,9 +34,10 @@ type Result struct {
 }
 
 type UploadCloud struct {
-	FilePath string
-	Cookies  []*http.Cookie
-	md5h     hash.Hash
+	FilePath     string
+	Cookies      []*http.Cookie
+	md5h         hash.Hash
+	SongMetadata *SongMetadata
 }
 
 var (
@@ -75,22 +81,9 @@ func (service *UploadCloud) UploadCloud() map[string]interface{} {
 	res, _ := CreateRequest("POST", `https://interface.music.163.com/api/cloud/upload/check`, data, options, nil)
 	indent, err := json.MarshalIndent(res, "", "")
 	fmt.Print("111" + string(indent))
-	m, err := tag.ReadFrom(file)
 	//if err != nil {
 	//	panic(err)
 	//}
-	if m != nil {
-		if m.Title() != "" {
-			songName = m.Title()
-		}
-		if m.Artist() != "" {
-			artist = m.Artist()
-		}
-		if m.Album() != "" {
-			album = m.Album()
-		}
-	}
-
 	data = make(map[string]string)
 	data["bucket"] = ""
 	data["ext"] = "mp3"
@@ -112,12 +105,15 @@ func (service *UploadCloud) UploadCloud() map[string]interface{} {
 	}
 	fmt.Print("tokenRes->" + string(marshalIndent))
 
+	//// 上传封面
+	//coverImgId, err := UploadImg(service.Cookies, config.Config.HomePath+"/tmp/img.png")
 	data = make(map[string]string)
 	data["songid"] = res["songId"].(string)
-	data["song"] = songName
+	data["song"] = service.SongMetadata.Title
 	data["filename"] = stat.Name()
-	data["album"] = album
-	data["artist"] = artist
+	data["album"] = service.SongMetadata.Album
+	//data["coverId"] = coverImgId
+	data["artist"] = service.SongMetadata.Artist
 	data["bitrate"] = "999000"
 	data["md5"] = hex.EncodeToString(service.md5h.Sum(nil))
 	data["resourceId"] = strconv.FormatInt(_tokenRes.Result.ResourceID, 10)

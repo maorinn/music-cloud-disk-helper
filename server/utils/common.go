@@ -3,6 +3,8 @@ package utils
 import (
 	"math/rand"
 	"os"
+	"path"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -19,9 +21,9 @@ func RandStringRunes(n int) string {
 	return string(b)
 }
 
-func interfaceMapToString(_map map[string] interface{})map[string]string  {
-	resultMap:= make(map[string]string)
-	for key,value := range _map {
+func interfaceMapToString(_map map[string]interface{}) map[string]string {
+	resultMap := make(map[string]string)
+	for key, value := range _map {
 		resultMap[key] = value.(string)
 	}
 	return resultMap
@@ -29,7 +31,7 @@ func interfaceMapToString(_map map[string] interface{})map[string]string  {
 
 // Exists 判断所给路径文件/文件夹是否存在
 func Exists(path string) bool {
-	_, err := os.Stat(path)    //os.Stat获取文件信息
+	_, err := os.Stat(path) //os.Stat获取文件信息
 	if err != nil {
 		if os.IsExist(err) {
 			return true
@@ -38,6 +40,7 @@ func Exists(path string) bool {
 	}
 	return true
 }
+
 // GetBetweenStr 截取指定字符串中间的
 func GetBetweenStr(str, start, end string) string {
 	n := strings.Index(str, start)
@@ -52,4 +55,14 @@ func GetBetweenStr(str, start, end string) string {
 	str = string([]byte(str)[:m])
 	str = strings.Replace(str, start, "", 1)
 	return str
+}
+
+// GetCurrentAbPathByCaller 获取当前执行文件绝对路径（go run）
+func GetCurrentAbPathByCaller() string {
+	var abPath string
+	_, filename, _, ok := runtime.Caller(0)
+	if ok {
+		abPath = path.Dir(filename)
+	}
+	return abPath
 }

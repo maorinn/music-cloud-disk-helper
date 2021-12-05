@@ -3,16 +3,16 @@ package v1
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/nats-io/nuid"
 	"net/http"
 	"strings"
 	"wy_music_cloud/cmd/app/handlers/base"
+	"wy_music_cloud/config"
 	"wy_music_cloud/internal/bilibili"
 	"wy_music_cloud/internal/netease"
 	"wy_music_cloud/utils"
 )
 
-var path = "./tmp"
+var path = config.Config.HomePath + "/tmp"
 
 type UploadSongDto struct {
 	Bvid string `json:"bvid"`
@@ -32,7 +32,7 @@ func UploadSong(c *gin.Context) {
 	for _, str := range split {
 		// 分离kv
 		i := strings.Split(str, "=")
-		fmt.Print("33333:"+i[0]+"vvvvvv"+i[1])
+		fmt.Print("33333:" + i[0] + "vvvvvv" + i[1])
 		neteaseCookies = append(neteaseCookies, &http.Cookie{Name: i[0], Value: i[1]})
 	}
 	// 构造Bili验证对象
@@ -65,17 +65,28 @@ func UploadSong(c *gin.Context) {
 		base.Re(c, -1, err.Error(), nil)
 	}
 	biliAudioDownloadUrl := playURL.Dash.Audio[0].BaseURL
+	// 获取视频基础信息
+	view, err := b.VideoGetView(dto.Bvid)
 	// 生成文件名
-	fileName := nuid.Next() + ".mp3"
-	// 下载
-	err = b.Down(biliAudioDownloadUrl, path, fileName)
-	if err != nil {
-		base.Re(c, -1, err.Error(), nil)
+	fileName := view.Title + ".mp3"
+	// 判断文件是否存在
+	exists := utils.Exists(path + "/" + fileName)
+	if !exists {
+		// 下载
+		err = b.Down(biliAudioDownloadUrl, path, fileName)
+		if err != nil {
+			base.Re(c, -1, err.Error(), nil)
+		}
 	}
 	// 上传网易云音乐
 	cloud := netease.UploadCloud{
 		FilePath: path + "/" + fileName,
 		Cookies:  neteaseCookies,
+		SongMetadata: &netease.SongMetadata{
+			Title:  view.Title,
+			Artist: view.Owner.Name,
+			Album:  "Bilibili",
+		},
 	}
 	cloud.UploadCloud()
 	base.Re(c, 0, "success", map[string]string{

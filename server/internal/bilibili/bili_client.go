@@ -59,7 +59,7 @@ func NewBiliClient(setting *BiliSetting) (*BiliClient, error) {
 	}
 
 	if bili.auth != nil {
-		fmt.Println("1111111111111"+bili.auth.BiliJCT)
+		fmt.Println("1111111111111" + bili.auth.BiliJCT)
 		account, err := bili.GetMe()
 		if err != nil {
 			return nil, err
@@ -167,14 +167,14 @@ func (b *BiliClient) VideoGetPlayURL(bvid string, cid int64, qn int, fnval int) 
 }
 
 // Down 下载资源
-func (b *BiliClient) Down(url, path string,fileName string) error {
+func (b *BiliClient) Down(url, path string, fileName string) error {
 	client := &http.Client{}
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		panic(err)
 	}
 	request.Header.Add("range", "bytes=0-")
-	request.Header.Add("referer","https://www.bilibili.com")
+	request.Header.Add("referer", "https://www.bilibili.com")
 	res, err := client.Do(request)
 	if err != nil {
 		return err
@@ -182,9 +182,9 @@ func (b *BiliClient) Down(url, path string,fileName string) error {
 	defer res.Body.Close()
 	exists := utils.Exists(path)
 	if exists == false {
-		os.Mkdir(path,os.ModePerm)
+		os.Mkdir(path, os.ModePerm)
 	}
-	f, err := os.Create(path+"/"+fileName)
+	f, err := os.Create(path + "/" + fileName)
 	if err != nil {
 		return err
 	}
@@ -195,6 +195,7 @@ func (b *BiliClient) Down(url, path string,fileName string) error {
 	}
 	return nil
 }
+
 // SetClient 设置Client,可以用来更换代理等操作
 func (b *BiliClient) SetClient(client *http.Client) {
 	b.client = client
@@ -280,4 +281,23 @@ func (b *BiliClient) VideoGetDescription(aid int64) (string, error) {
 		return "", err
 	}
 	return desc, nil
+}
+
+// VideoGetView 获取视频基础信息
+func (b *BiliClient) VideoGetView(bvid string) (*VideoView, error) {
+	resp, err := b.RawParse(common.BiliApiURL,
+		"x/web-interface/view",
+		"GET",
+		map[string]string{
+			"bvid": bvid,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	var videoView *VideoView
+	if err = json.Unmarshal(resp.Data, &videoView); err != nil {
+		return nil, err
+	}
+	return videoView, nil
 }
