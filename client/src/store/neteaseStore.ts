@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { config } from 'config/config'
 import { action, makeObservable, observable } from 'mobx'
 const storage = window.localStorage
 class NeteaseStore {
@@ -15,7 +16,7 @@ class NeteaseStore {
   async updateLoginQRInfo() {
     let { data } = await axios.request({
       method: 'GET',
-      url: `http://127.0.0.1:8000/api/v1/netease/qrKey`
+      url: `http://${config.SERVER_HOME}/api/v1/netease/qrKey`
     })
     data = data.data
     this.qrUrl = `https://music.163.com/login?codekey=${data.key}`
@@ -26,7 +27,7 @@ class NeteaseStore {
   async checkEwmStatus() {
     let { data } = await axios.request({
       method: 'GET',
-      url: `http://127.0.0.1:8000/api/v1/netease/checkQr`,
+      url: `http://${config.SERVER_HOME}/api/v1/netease/checkQr`,
       params: {
         key: this.key
       }
@@ -37,7 +38,9 @@ class NeteaseStore {
     if (status) {
       // 登录成功保存token
       storage.setItem('netease_cookie_str', cookie)
+      return true
     }
+    return false
   }
 
   // 上传云音乐
@@ -48,11 +51,11 @@ class NeteaseStore {
       headers: {
         netease_cookie_str: this.cookieStr
       },
-      url: `http://127.0.0.1:8000/api/v1/UploadSong`,
+      url: `http://${config.SERVER_HOME}/api/v1/UploadSong`,
       data: {
         bvid: bvId
       },
-      timeout:60000
+      timeout: 60000
     })
 
     return resp

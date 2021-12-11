@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { config } from 'config/config'
 import { action, makeObservable, observable } from 'mobx'
 const storage = window.localStorage
 class BiliStore {
@@ -12,7 +13,7 @@ class BiliStore {
   async updateLoginQRInfo() {
     let { data } = await axios.request({
       method: 'GET',
-      url: `http://127.0.0.1:8000/api/v1/bili/LoginUrl`
+      url: `http://${config.SERVER_HOME}/api/v1/bili/LoginUrl`
     })
     data =  data.data
     console.log("设置bili二维码->",data.url);
@@ -25,7 +26,7 @@ class BiliStore {
   async checkEwmStatus() {
     let { data } = await axios.request({
       method: 'POST',
-      url: `http://127.0.0.1:8000/api/v1/bili/LoginInfo`,
+      url: `http://${config.SERVER_HOME}/api/v1/bili/LoginInfo`,
       data: {
         oauthKey: this.oauthKey
       }

@@ -24,9 +24,20 @@ const Home = (props: Props) => {
   const [bvId, setBvId] = React.useState('')
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+  let loginCheckTimer: any = null
   const handleBinNetease = async () => {
     await neteaseStore.updateLoginQRInfo()
     handleOpen()
+    // 检查 登录状态定时任务
+    loginCheckTimer = setInterval(async () => {
+      const bool = await neteaseStore.checkEwmStatus()
+      if (bool) {
+        setSnackbarOpen(true)
+        setSnackbarMessage("登录成功")
+        handleClose()
+        clearInterval(loginCheckTimer)
+      }
+    }, 2000)
   }
   const handleUploadSong = async () => {
     setBackdropOpen(true)
