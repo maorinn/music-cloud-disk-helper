@@ -51,7 +51,8 @@ class NeteaseStore {
       url: `http://127.0.0.1:8000/api/v1/UploadSong`,
       data: {
         bvid: bvId
-      }
+      },
+      timeout:60000
     })
 
     return resp
