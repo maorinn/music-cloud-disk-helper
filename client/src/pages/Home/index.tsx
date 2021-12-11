@@ -23,7 +23,10 @@ const Home = (props: Props) => {
   const [snackbarMessage, setSnackbarMessage] = React.useState('')
   const [bvId, setBvId] = React.useState('')
   const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const handleClose = () => {
+    setOpen(false)
+    clearInterval(loginCheckTimer)
+  }
   let loginCheckTimer: any = null
   const handleBinNetease = async () => {
     await neteaseStore.updateLoginQRInfo()
@@ -33,9 +36,8 @@ const Home = (props: Props) => {
       const bool = await neteaseStore.checkEwmStatus()
       if (bool) {
         setSnackbarOpen(true)
-        setSnackbarMessage("登录成功")
+        setSnackbarMessage('登录成功')
         handleClose()
-        clearInterval(loginCheckTimer)
       }
     }, 2000)
   }
@@ -51,9 +53,6 @@ const Home = (props: Props) => {
       setSnackbarMessage('上传失败，请稍后再试~')
     }
   }
-  useEffect(() => {
-    console.log('snackbarOpen->', snackbarOpen)
-  }, [snackbarOpen])
   return useObserver(() => (
     <Container>
       <Navigation />
