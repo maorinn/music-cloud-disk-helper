@@ -58,15 +58,15 @@ func NewBiliClient(setting *BiliSetting) (*BiliClient, error) {
 		}),
 	}
 
-	if bili.auth != nil {
-		fmt.Println("1111111111111" + bili.auth.BiliJCT)
-		account, err := bili.GetMe()
-		if err != nil {
-			return nil, err
-		}
-
-		bili.Me = account
-	}
+	//if bili.auth != nil {
+	//	fmt.Println("1111111111111" + bili.auth.BiliJCT)
+	//	account, err := bili.GetMe()
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//
+	//	bili.Me = account
+	//}
 
 	return bili, nil
 }

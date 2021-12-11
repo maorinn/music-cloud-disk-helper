@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { Home, Login } from '@pages'
+import { Home, Login,Demo } from '@pages'
 import { RouteConfig, renderRoutes } from 'react-router-config'
 
 const routesConfig: RouteConfig[] = [
@@ -13,6 +13,11 @@ const routesConfig: RouteConfig[] = [
     path: '/login',
     exact: true,
     component: Login
+  },
+  {
+    path: '/demo',
+    exact: true,
+    component: Demo
   }
 ]
 
