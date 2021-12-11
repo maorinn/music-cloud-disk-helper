@@ -14,6 +14,7 @@ import Modal from '@mui/material/Modal'
 import Snackbar from '@mui/material/Snackbar'
 import { Backdrop, CircularProgress } from '@mui/material'
 interface Props {}
+let loginCheckTimer: any = null
 const Home = (props: Props) => {
   const biliStore = useLocalStore(() => stores.biliStore)
   const neteaseStore = useLocalStore(() => stores.neteaseStore)
@@ -27,7 +28,6 @@ const Home = (props: Props) => {
     setOpen(false)
     clearInterval(loginCheckTimer)
   }
-  let loginCheckTimer: any = null
   const handleBinNetease = async () => {
     await neteaseStore.updateLoginQRInfo()
     handleOpen()
