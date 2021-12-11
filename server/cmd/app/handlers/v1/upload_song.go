@@ -67,7 +67,7 @@ func UploadSong(c *gin.Context) {
 	biliAudioDownloadUrl := playURL.Dash.Audio[0].BaseURL
 	// 获取视频基础信息
 	view, err := b.VideoGetView(dto.Bvid)
-	view.Title = strings.ReplaceAll(view.Title,"/","-")
+	view.Title = strings.Replace(view.Title,"/","-",-1)
 	// 生成文件名
 	fileName := view.Title + ".mp3"
 	// 判断文件是否存在
