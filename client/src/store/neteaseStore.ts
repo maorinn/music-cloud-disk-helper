@@ -38,6 +38,7 @@ class NeteaseStore {
     if (status) {
       // 登录成功保存token
       storage.setItem('netease_cookie_str', cookie)
+      this.cookieStr = cookie
       return true
     }
     return false

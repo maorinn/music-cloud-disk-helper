@@ -42,16 +42,21 @@ const Home = (props: Props) => {
     }, 2000)
   }
   const handleUploadSong = async () => {
-    setBackdropOpen(true)
-    const resp = await neteaseStore.uploadBiliSong(bvId)
-    setBackdropOpen(false)
-
-    setSnackbarOpen(true)
-    if (resp.status == 200 && resp.data.code == 0) {
-      setSnackbarMessage('上传成功')
-    } else {
-      setSnackbarMessage('上传失败，请稍后再试~')
+    if(neteaseStore.cookieStr){
+      setBackdropOpen(true)
+      const resp = await neteaseStore.uploadBiliSong(bvId)
+      setBackdropOpen(false)
+  
+      setSnackbarOpen(true)
+      if (resp.status == 200 && resp.data.code == 0) {
+        setSnackbarMessage('上传成功')
+      } else {
+        setSnackbarMessage('上传失败，请稍后再试~')
+      }
+    }else{
+      handleBinNetease()
     }
+    
   }
   return useObserver(() => (
     <Container>
