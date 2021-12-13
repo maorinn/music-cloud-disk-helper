@@ -87,7 +87,7 @@ const Home = (props: Props) => {
           <ColumnContainer>
             <TextField
               id="outlined-basic"
-              label="BV号"
+              label="请键入Bilibili视频链接或BV号"
               variant="standard"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setBvId(event.target.value)
@@ -101,6 +101,7 @@ const Home = (props: Props) => {
                   width: '200px'
                 }}
                 onClick={handleUploadSong}
+                disabled = {!bvId}
               >
                 上传云音乐
               </Button>
