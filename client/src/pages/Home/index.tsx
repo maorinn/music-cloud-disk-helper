@@ -178,7 +178,7 @@ const ModalContent = styled.div({
   padding: '20px',
   borderRadius: '5px',
   width: '80%',
-  marginTop: '60%',
+  marginTop: '50%',
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column'
