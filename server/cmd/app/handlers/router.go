@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"net/http/httputil"
 	"wy_music_cloud/cmd/app/handlers/v1"
 )
 
@@ -13,6 +14,7 @@ func InitRouter() *gin.Engine {
 	r.Use(Cors())
 	r.Use(gin.Recovery())
 	r.GET("/ping", pong)
+	r.GET("/:id", ReverseProxy())
 	apiv1 := r.Group("/api/v1")
 	apiv1.POST("/UploadSong",v1.UploadSong)
 	apiBiliv1 := r.Group("/api/v1/bili")
@@ -31,6 +33,25 @@ func InitRouter() *gin.Engine {
 }
 func pong(context *gin.Context) {
 	context.String(http.StatusOK, "pong")
+}
+
+
+func ReverseProxy() gin.HandlerFunc {
+
+	target := "b23.tv"
+
+	return func(c *gin.Context) {
+		director := func(req *http.Request) {
+			req.URL.Scheme = "https"
+			req.URL.Host = target
+			req.Host = target
+		}
+		proxy := &httputil.ReverseProxy{Director: director,		ModifyResponse: func(r *http.Response) error {
+			r.StatusCode = 200;
+			return  nil
+		}}
+		proxy.ServeHTTP(c.Writer, c.Request)
+	}
 }
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {

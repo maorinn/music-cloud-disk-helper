@@ -44,7 +44,9 @@ const Home = (props: Props) => {
   const handleUploadSong = async () => {
     if(neteaseStore.cookieStr){
       setBackdropOpen(true)
-      const resp = await neteaseStore.uploadBiliSong(bvId)
+      // 解析bvid
+      const _bvid = await biliStore.parsingBv(bvId)
+      const resp = await neteaseStore.uploadBiliSong(_bvid)
       setBackdropOpen(false)
   
       setSnackbarOpen(true)
