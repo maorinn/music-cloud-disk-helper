@@ -47,28 +47,33 @@ class BiliStore {
     const bvReg = /BV\w{10}/i
     if (bvReg.exec(content)) {
       const list = bvReg.exec(content)
-      console.log({list});
-      
-      bvId = list[0]
+      console.log({ list })
+      if (list) {
+        bvId = list[0]
+      }
     } else if (content.indexOf('https://b23.tv/') != -1) {
       // 手机分享链接，先提取url
       const list = /https:\/\/b23.tv\/\w+$/.exec(content)
-      const url = list[0]
-      const shareAcronym = url.split("/")[url.split("/").length-1]
-      console.log({shareAcronym});
-      
-      const resp = await axios({
-        method: 'GET',
-        url: `http://${config.SERVER_HOME}/${shareAcronym}`,
-        maxRedirects:0
-      })
-      const locationUrl = resp.headers['location']
-      console.log({locationUrl});
-      
-      bvId = bvReg.exec(locationUrl)[0]
+      if (list != null) {
+        const url = list[0]
+        const shareAcronym = url.split('/')[url.split('/').length - 1]
+        console.log({ shareAcronym })
+
+        const resp = await axios({
+          method: 'GET',
+          url: `http://${config.SERVER_HOME}/${shareAcronym}`,
+          maxRedirects: 0
+        })
+        const locationUrl = resp.headers['location']
+        console.log({ locationUrl })
+        let bvrgeList = bvReg.exec(locationUrl)
+        if (bvrgeList) {
+          bvId = bvrgeList[0]
+        }
+      }
     }
-    console.log("解析bvid",bvId);
-    
+    console.log('解析bvid', bvId)
+
     return bvId
   }
 }
