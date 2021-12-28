@@ -3,14 +3,14 @@ ENV GOPROXY=https://goproxy.cn,direct
 ENV ROOT=/app
 ENV CGO_ENABLED 0
 RUN mkdir -p ${ROOT}
-COPY ./server ${ROOT}/server
+COPY . ${ROOT}/server
 WORKDIR ${ROOT}/server/cmd/app
 RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go_server
 
 FROM node:14
-
-COPY ./clinet ${ROOT}/clinet
+ENV ROOT=/app
+COPY --from=golang_builder ${ROOT}/client ${ROOT}/client
 WORKDIR ${ROOT}/clinet
 ENV NODE_ENV=production
 RUN npm install
