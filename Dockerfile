@@ -25,7 +25,7 @@ COPY --from=golang_builder ${ROOT}/server/cmd/app/go_server /app
 CMD ["serve", "-s", "dist"]
 WORKDIR ${ROOT}
 RUN chmod +x go_server
-ENTRYPOINT ["go_server"]
+RUN ./go_server
 # FROM alpine:3.7
 # # 配置国内源
 # RUN echo "http://mirrors.aliyun.com/alpine/v3.7/main/" > /etc/apk/repositories
