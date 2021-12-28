@@ -11,8 +11,8 @@ import (
 func main() {
 	gin.SetMode("debug")
 	routersInit := handlers.InitRouter()
-	routersInit.Run(":8000")
-	log.Printf("[info] start http server listening %s", ":8000")
+	routersInit.Run(":22333")
+	log.Printf("[info] start http server listening %s", ":22333")
 }
 
 //func main() {
