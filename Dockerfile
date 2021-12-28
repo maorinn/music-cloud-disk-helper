@@ -19,11 +19,12 @@ RUN npm run build
 EXPOSE 5000
 EXPOSE 22333
 # 复制打包的Go文件到系统用户可执行程序目录下
-COPY --from=golang_builder ${ROOT}/go_server ${ROOT}/go_server
+COPY --from=golang_builder ${ROOT}/go_server /app
 RUN chmod +x ${ROOT}/go_server
 # 容器启动时运行的命令
 CMD ["serve", "-s", "dist"]
-ENTRYPOINT ["${ROOT}/go_server"]
+WORKDIR ${ROOT}
+ENTRYPOINT ["go_server"]
 # FROM alpine:3.7
 # # 配置国内源
 # RUN echo "http://mirrors.aliyun.com/alpine/v3.7/main/" > /etc/apk/repositories
