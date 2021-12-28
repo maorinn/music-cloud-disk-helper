@@ -3,7 +3,7 @@ ENV GOPROXY=https://goproxy.cn,direct
 ENV ROOT=/app
 ENV CGO_ENABLED 0
 RUN mkdir -p ${ROOT}
-COPY . ${ROOT}/server
+COPY . ${ROOT}
 WORKDIR ${ROOT}/server/cmd/app
 RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go_server
