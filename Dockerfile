@@ -4,7 +4,7 @@ ENV ROOT=/app
 ENV CGO_ENABLED 0
 RUN mkdir -p ${ROOT}
 COPY ./server ${ROOT}/server
-WORKDIR ${ROOT}/cmd/app
+WORKDIR ${ROOT}/server/cmd/app
 RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go_server
 
