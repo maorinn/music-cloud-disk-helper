@@ -16,7 +16,7 @@ ENV NODE_ENV=production
 RUN npm install
 RUN npm i -g serve
 RUN npm run build
-EXPOSE 5000
+EXPOSE 3000
 EXPOSE 22333
 # 复制打包的Go文件到系统用户可执行程序目录下
 COPY --from=golang_builder ${ROOT}/server/cmd/app/go_server /app
