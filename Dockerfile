@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go_server
 
 FROM node:14
 ENV ROOT=/app
-COPY --from=golang_builder ${ROOT}/client ${ROOT}/client
+COPY --from=golang_builder ${ROOT}/client /app
 WORKDIR ${ROOT}/clinet
 ENV NODE_ENV=production
 RUN npm install
