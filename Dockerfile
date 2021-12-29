@@ -11,8 +11,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go_server
 FROM node:14
 ENV ROOT=/app
 WORKDIR ${ROOT}
-COPY --from=golang_builder ${ROOT}/ .
-CMD ["echo", "$a*"]
+COPY --from=golang_builder ${ROOT}/ /
 WORKDIR ${ROOT}/clinet
 ENV NODE_ENV=production
 RUN npm install
