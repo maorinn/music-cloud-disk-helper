@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go_server
 
 FROM node:14
 ENV ROOT=/app
-COPY --from=golang_builder ${ROOT}/client /app
+COPY --from=golang_builder ${ROOT} /app
 WORKDIR ${ROOT}/clinet
 ENV NODE_ENV=production
 RUN npm install
@@ -25,7 +25,7 @@ COPY --from=golang_builder ${ROOT}/server/cmd/app/go_server /app
 CMD ["serve", "-s", "dist"]
 WORKDIR ${ROOT}
 RUN chmod +x go_server
-ENTRYPOINT ["./go_server"]
+ENTRYPOINT ["entrypoint.sh"]
 # FROM alpine:3.7
 # # 配置国内源
 # RUN echo "http://mirrors.aliyun.com/alpine/v3.7/main/" > /etc/apk/repositories
