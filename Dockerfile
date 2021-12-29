@@ -23,6 +23,7 @@ EXPOSE 22333
 COPY --from=golang_builder ${ROOT}/server/cmd/app/go_server /app
 WORKDIR ${ROOT}
 RUN chmod +x go_server
+RUN chmod +x entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
 # FROM alpine:3.7
 # # 配置国内源
