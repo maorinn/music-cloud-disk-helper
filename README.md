@@ -4,6 +4,8 @@
 
 ## Docker deploy
 ``
+git clone https://github.com/maorinn/music-cloud-disk-helper
+cd music-cloud-disk-helper
 docker build -t music-cloud-disk-helper .
 docker run -p 22333:22333 -p 2280:3000 -d music-cloud-disk-helper -name music-cloud-disk-helper
 ``
